@@ -24,6 +24,7 @@ CREATE TABLE "users" (
 CREATE TABLE "records" (
     "uid" int   NOT NULL,
     "anime_id" int   NOT NULL,
+    "episodes_watched" int NOT NULL DEFAULT 0 CHECK ("episodes_watched" >= 0) ,
     CONSTRAINT "pk_records" PRIMARY KEY (
         "uid","anime_id"
      )

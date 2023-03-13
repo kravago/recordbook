@@ -9,7 +9,10 @@ const axios = require("axios");
 const { ensureLoggedIn, authenticateJWT } = require("../middleware/auth");
 const { NotFoundError } = require("../expressError");
 const API = require("../api");
-const db = require("../db");
+
+const Record = require("../models/record");
+// const db = require("../db");
+
 const router = express.Router({ mergeParams: true });
 
 // route to search for anime 
@@ -56,39 +59,5 @@ router.get("/seasonalanime", authenticateJWT, async function (req, res, next) {
     return next(err);
   }
 });
-
-
-// route to add anime to records 
-router.get("/favorite/:animeId/user/:userId", authenticateJWT, async function (req, res, next) {
-  try {
-    // add anime to favs 
-    const userId = req.params.userId;
-    const animeId = req.params.animeId;
-
-    // check favorite exists
-    // const check1 = await db.query(
-    //   `SELECT anime_id
-    //   FROM records
-    //   WHERE anime_id = $1 AND uid = $2`, [animeId, userId]
-    // )
-    // const existingRecord = check1.rows[0];
-    
-    // if (record) throw new NotFoundError(`No record: ${animeId}`);
-
-    await db.query(
-      `INSERT INTO records (uid, anime_id)
-       VALUES ($1, $2)`, [userId, animeId]      
-    );
-    return res.json({ applied: animeId});
-  } catch (err) {
-    return next(err);
-  }
-});
-// route to remove anime from records
-
-// route to increment an anime being watched
-
-// route to decrement an anime being watched
-
 
 module.exports = router;
