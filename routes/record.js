@@ -13,25 +13,25 @@ const Record = require("../models/record");
 const router = express.Router({ mergeParams: true });
 
 // route to add anime to records 
-router.post("/add/:animeId/user/:userId", authenticateJWT, async function (req, res, next) {
+router.post("/add", authenticateJWT, async function (req, res, next) {
   try {
     // add anime to favs 
-    const userId = req.params.userId;
-    const animeId = req.params.animeId;
+    const userId = req.body.userId;
+    const animeId = req.body.animeId;
 
     const rec = await Record.create(userId, animeId);
 
-    return res.json({ applied: rec});
+    return res.json({ recordAdded: rec});
   } catch (err) {
     return next(err);
   }
 });
 
 // route to remove anime from records
-router.delete("/delete/:animeId/user/:userId", authenticateJWT, async function (req, res, next) {
+router.delete("/delete", authenticateJWT, async function (req, res, next) {
   try {
-    const userId = req.params.userId;
-    const animeId = req.params.animeId;
+    const userId = req.body.userId;
+    const animeId = req.body.animeId;
 
     const rec = await Record.delete(userId, animeId);
 
@@ -42,15 +42,30 @@ router.delete("/delete/:animeId/user/:userId", authenticateJWT, async function (
 });
 
 // route to increment/decrement an anime being watched
-router.post("/update/:method/:animeId/user/:userId", authenticateJWT, async function (req, res, next) {
+// TODO: make a check it doesnt go beyond the max episodes
+router.post("/episodes", authenticateJWT, async function (req, res, next) {
   try {
-    const method = req.params.method;
-    const userId = req.params.userId;
-    const animeId = req.params.animeId;
+    const episodes = req.body.episodes;
+    const userId = req.body.userId;
+    const animeId = req.body.animeId;
 
-    const rec = await Record.increment(method, userId, animeId);
+    const rec = await Record.updateEpisodes(episodes, userId, animeId);
 
     return res.json({ episodes_updated: rec});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.post("/score", authenticateJWT, async function (req, res, next) {
+  try {
+    const score = req.body.score;
+    const userId = req.body.userId;
+    const animeId = req.body.animeId;
+
+    const rec = await Record.updateScore(score, userId, animeId);
+
+    return res.json({ scoreUpdated: rec});
   } catch (err) {
     return next(err);
   }

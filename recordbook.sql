@@ -25,6 +25,7 @@ CREATE TABLE "records" (
     "uid" int   NOT NULL,
     "anime_id" int   NOT NULL,
     "episodes_watched" int NOT NULL DEFAULT 0 CHECK ("episodes_watched" >= 0) ,
+    "score" float CHECK ("score" BETWEEN 0 AND 10),
     CONSTRAINT "pk_records" PRIMARY KEY (
         "uid","anime_id"
      )

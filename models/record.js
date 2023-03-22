@@ -41,30 +41,30 @@ class Record {
     return record.uid;
   }
 
-  static async increment(method, userId, animeId) {
-    // get the current amount of episodes
-    const rec = await db.query(
-      `SELECT episodes_watched
-      FROM records
-      WHERE uid = $1 AND anime_id = $2`,
-      [userId, animeId]
-    );
-    let newEpisodeCt = rec.rows[0].episodes_watched;
-    if (method === 'add') {
-      newEpisodeCt += 1;
-    } else if (method === 'sub') {
-      newEpisodeCt -= 1;
-    }
+  static async updateEpisodes(val, userId, animeId) {
     const result = await db.query(
       `UPDATE records
        SET episodes_watched = $1
        WHERE uid = $2 AND anime_id = $3
        RETURNING episodes_watched`,
-       [newEpisodeCt, userId, animeId]
+       [val, userId, animeId]
     );
     const record = result.rows[0];
     if (!record) throw new NotFoundError(`No record: ${animeId}`);
     return record.episodes_watched;
+  }
+
+  static async updateScore(val, userId, animeId) {
+    const result = await db.query(
+      `UPDATE records
+       SET score = $1
+       WHERE uid = $2 AND anime_id = $3
+       RETURNING score`,
+       [val, userId, animeId]
+    );
+    const record = result.rows[0];
+    if (!record) throw new NotFoundError(`No record: ${animeId}`);
+    return record.score;
   }
 }
 

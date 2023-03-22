@@ -4,18 +4,19 @@
 
 const axios = require('axios');
 const { getSeason } = require('./helpers/season');
-const BASE_URL = "https://api.myanimelist.net/v2";
-const TOKEN = process.env.TOKEN;
-const headers = { "X-MAL-CLIENT-ID": TOKEN }
-const params = { 
-        fields: "start_date,end_date,synopsis,mean,status,genres,num_episodes,start_season" 
-}
+const BASE_URL = 'https://api.jikan.moe/v4';
+// const BASE_URL = "https://api.myanimelist.net/v2";
+// const TOKEN = process.env.TOKEN;
+// const headers = { "X-MAL-CLIENT-ID": TOKEN }
+// const params = { 
+//         fields: "start_date,end_date,synopsis,mean,status,genres,num_episodes,start_season" 
+// }
 
 const getAnimeFromId = async (anime_id) => {
   try {
-    const config = { headers: headers, params: params}
-    const res = await axios.get(BASE_URL + `/anime/${anime_id}`, config);
-    return res.data;
+    // const config = { headers: headers, params: params}
+    const res = await axios.get(BASE_URL + `/anime/${anime_id}`);
+    return res.data.data;
   } catch (err) {
     return err.message;
   }
@@ -54,7 +55,7 @@ const getSeasonalAnime = async () => {
 
 module.exports = {
     BASE_URL,
-    TOKEN,
+    // TOKEN,
     getAnimeFromId,
     getAnimesFromSearch,
     getTopAnime,

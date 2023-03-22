@@ -1,6 +1,6 @@
 "use strict";
 
-/** Routes for anime. */
+/** Routes for anime episodes. */
 
 const jsonschema = require("jsonschema");
 const express = require("express");
@@ -16,9 +16,9 @@ const { NotFoundError } = require("../expressError");
 
 const router = express.Router({ mergeParams: true });
 
-// route to search for anime 
+// route to get all episodes for an anime 
 // GET / => { anime, anime, ... }
-router.get("/search", authenticateJWT, async function (req, res, next) {
+router.get("/:animeId", authenticateJWT, async function (req, res, next) {
   try {
     console.log(req.params.q);
     const animes = await API.getAnimesFromSearch(req.query.q);
