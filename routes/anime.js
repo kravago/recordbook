@@ -10,7 +10,7 @@ const Anime = require("../models/anime");
 const API = require("../api");
 const parseAnimeData = require("../helpers/animeParser");
 
-const { ensureLoggedIn, authenticateJWT } = require("../middleware/auth");
+const { ensureLoggedIn, ensureCorrectUserOrAdmin, authenticateJWT } = require("../middleware/auth");
 const { NotFoundError } = require("../expressError");
 
 
@@ -18,7 +18,7 @@ const router = express.Router({ mergeParams: true });
 
 // search for anime 
 // GET /search => [{ anime }, { anime }, ... }]
-router.get("/search", authenticateJWT, async function (req, res, next) {
+router.get("/search", ensureLoggedIn, async function (req, res, next) {
   try {
     const animes = await API.getAnimesFromSearch(req.query.q);
     return res.json(animes.data);
@@ -29,7 +29,7 @@ router.get("/search", authenticateJWT, async function (req, res, next) {
 
 // look up anime by myanimelist id
 // GET /[anime_id] => { anime }
-router.get("/id/:anime_id", authenticateJWT, async function (req, res, next) {
+router.get("/id/:anime_id", ensureLoggedIn, async function (req, res, next) {
   try {
     const anime = await API.getAnimeFromId(req.params.anime_id);
     const parsedAnime = parseAnimeData(anime);
@@ -42,7 +42,7 @@ router.get("/id/:anime_id", authenticateJWT, async function (req, res, next) {
 
 // route for getting top anime series
 // GET /top_anime => [{ anime }, { anime }, ... }]
-router.get("/top_anime", authenticateJWT, async function (req, res, next) {
+router.get("/top_anime", ensureLoggedIn, async function (req, res, next) {
   try {
     const topAnime = await API.getTopAnime();
     return res.json(topAnime.data);
@@ -53,7 +53,7 @@ router.get("/top_anime", authenticateJWT, async function (req, res, next) {
 
 // route for getting the seasonal anime
 // GET /current_season => [{ anime }, { anime }, ... }]
-router.get("/current_season", authenticateJWT, async function (req, res, next) {
+router.get("/current_season", ensureLoggedIn, async function (req, res, next) {
   try {
     const currentSeason = await API.getSeasonalAnime();
     return res.json(currentSeason.data);
