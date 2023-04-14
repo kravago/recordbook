@@ -33,8 +33,8 @@ router.get("/id/:anime_id", ensureLoggedIn, async function (req, res, next) {
   try {
     const anime = await API.getAnimeFromId(req.params.anime_id);
     const parsedAnime = parseAnimeData(anime);
-    await Anime.create(parsedAnime);
-    return res.json(parsedAnime);
+    const stored_anime = await Anime.create(parsedAnime);
+    return res.json(stored_anime);
   } catch (err) {
     return next(err);
   }

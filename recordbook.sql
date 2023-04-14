@@ -38,7 +38,7 @@ CREATE TABLE "anime" (
     "image" text   NOT NULL,
     "start_date" date   NOT NULL,
     "end_date" date   NOT NULL,
-    "rating" float   NOT NULL,
+    "rating" text   NOT NULL,
     "status" text   NOT NULL,
     CONSTRAINT "pk_anime" PRIMARY KEY (
         "anime_id"
@@ -141,7 +141,7 @@ CREATE TABLE "anime" (
     "image" text   NOT NULL,
     "start_date" date   NOT NULL,
     "end_date" date   NOT NULL,
-    "rating" float   NOT NULL,
+    "rating" text   NOT NULL,
     "status" text   NOT NULL,
     CONSTRAINT "pk_anime_test" PRIMARY KEY (
         "anime_id"

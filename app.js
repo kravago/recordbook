@@ -24,7 +24,7 @@ app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
-app.use("/user", usersRoutes);
+app.use("/users", usersRoutes);
 app.use("/anime", animeRoutes);
 app.use("/episode", episodeRoutes);
 app.use("/record", recordRoutes);
