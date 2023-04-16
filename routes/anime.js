@@ -45,7 +45,8 @@ router.get("/id/:anime_id", ensureLoggedIn, async function (req, res, next) {
 router.get("/top_anime", ensureLoggedIn, async function (req, res, next) {
   try {
     const topAnime = await API.getTopAnime();
-    return res.json(topAnime.data);
+    const topAnimeObjs = topAnime.data.map(async animeDetails => await Anime.create(animeDetails));
+    return res.json(topAnimeObjs);
   } catch (err) {
     return next(err);
   }
