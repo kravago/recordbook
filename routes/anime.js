@@ -10,55 +10,54 @@ const Anime = require("../models/anime");
 const API = require("../api");
 const parseAnimeData = require("../helpers/animeParser");
 
-const { ensureLoggedIn, authenticateJWT } = require("../middleware/auth");
+const { ensureLoggedIn, ensureCorrectUserOrAdmin, authenticateJWT } = require("../middleware/auth");
 const { NotFoundError } = require("../expressError");
 
 
 const router = express.Router({ mergeParams: true });
 
-// route to search for anime 
-// GET / => { anime, anime, ... }
-router.get("/search", authenticateJWT, async function (req, res, next) {
+// search for anime 
+// GET /search => [{ anime }, { anime }, ... }]
+router.get("/search", ensureLoggedIn, async function (req, res, next) {
   try {
-    console.log(req.params.q);
     const animes = await API.getAnimesFromSearch(req.query.q);
-    return res.json(animes);
+    return res.json(animes.data);
   } catch (err) {
     return console.log(err);
   }
 });
 
-// route for looking up anime 
+// look up anime by myanimelist id
 // GET /[anime_id] => { anime }
-router.get("/id/:anime_id", authenticateJWT, async function (req, res, next) {
+router.get("/id/:anime_id", ensureLoggedIn, async function (req, res, next) {
   try {
     const anime = await API.getAnimeFromId(req.params.anime_id);
     const parsedAnime = parseAnimeData(anime);
-    await Anime.create(parsedAnime);
-    return res.json(parsedAnime);
+    const stored_anime = await Anime.create(parsedAnime);
+    return res.json(stored_anime);
   } catch (err) {
     return next(err);
   }
 });
 
 // route for getting top anime series
-// GET /topanime => { anime, anime, ...}
-router.get("/topanime", authenticateJWT, async function (req, res, next) {
+// GET /top_anime => [{ anime }, { anime }, ... }]
+router.get("/top_anime", ensureLoggedIn, async function (req, res, next) {
   try {
     const topAnime = await API.getTopAnime();
-    return res.json(topAnime);
+    const topAnimeObjs = topAnime.data.map(async animeDetails => await Anime.create(animeDetails));
+    return res.json(topAnimeObjs);
   } catch (err) {
     return next(err);
   }
 });
 
 // route for getting the seasonal anime
-// GET /seasonalanime => { anime, anime, ...}
-// TODO: Make it dynamic - user can select year and seasons
-router.get("/seasonalanime", authenticateJWT, async function (req, res, next) {
+// GET /current_season => [{ anime }, { anime }, ... }]
+router.get("/current_season", ensureLoggedIn, async function (req, res, next) {
   try {
-    const topAnime = await API.getSeasonalAnime();
-    return res.json(topAnime);
+    const currentSeason = await API.getSeasonalAnime();
+    return res.json(currentSeason.data);
   } catch (err) {
     return next(err);
   }

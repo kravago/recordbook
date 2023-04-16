@@ -6,14 +6,14 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 const axios = require("axios");
 
-const { authenticateJWT } = require("../middleware/auth");
+const { ensureLoggedIn } = require("../middleware/auth");
 const { NotFoundError } = require("../expressError");
 const API = require("../api");
 const Record = require("../models/record");
 const router = express.Router({ mergeParams: true });
 
 // route to add anime to records 
-router.post("/add", authenticateJWT, async function (req, res, next) {
+router.post("/add", ensureLoggedIn, async function (req, res, next) {
   try {
     // add anime to favs 
     const userId = req.body.userId;
@@ -28,7 +28,7 @@ router.post("/add", authenticateJWT, async function (req, res, next) {
 });
 
 // route to remove anime from records
-router.delete("/delete", authenticateJWT, async function (req, res, next) {
+router.delete("/delete", ensureLoggedIn, async function (req, res, next) {
   try {
     const userId = req.body.userId;
     const animeId = req.body.animeId;
@@ -43,7 +43,7 @@ router.delete("/delete", authenticateJWT, async function (req, res, next) {
 
 // route to increment/decrement an anime being watched
 // TODO: make a check it doesnt go beyond the max episodes
-router.post("/episodes", authenticateJWT, async function (req, res, next) {
+router.post("/episodes", ensureLoggedIn, async function (req, res, next) {
   try {
     const episodes = req.body.episodes;
     const userId = req.body.userId;
@@ -57,7 +57,7 @@ router.post("/episodes", authenticateJWT, async function (req, res, next) {
   }
 });
 
-router.post("/score", authenticateJWT, async function (req, res, next) {
+router.post("/score", ensureLoggedIn, async function (req, res, next) {
   try {
     const score = req.body.score;
     const userId = req.body.userId;

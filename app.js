@@ -11,6 +11,7 @@ const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
 const animeRoutes = require("./routes/anime");
+const episodeRoutes = require("./routes/episode");
 const recordRoutes = require("./routes/record");
 
 const morgan = require("morgan");
@@ -23,8 +24,9 @@ app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
-app.use("/user", usersRoutes);
+app.use("/users", usersRoutes);
 app.use("/anime", animeRoutes);
+app.use("/episode", episodeRoutes);
 app.use("/record", recordRoutes);
 
 

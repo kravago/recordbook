@@ -5,16 +5,9 @@
 const axios = require('axios');
 const { getSeason } = require('./helpers/season');
 const BASE_URL = 'https://api.jikan.moe/v4';
-// const BASE_URL = "https://api.myanimelist.net/v2";
-// const TOKEN = process.env.TOKEN;
-// const headers = { "X-MAL-CLIENT-ID": TOKEN }
-// const params = { 
-//         fields: "start_date,end_date,synopsis,mean,status,genres,num_episodes,start_season" 
-// }
 
 const getAnimeFromId = async (anime_id) => {
   try {
-    // const config = { headers: headers, params: params}
     const res = await axios.get(BASE_URL + `/anime/${anime_id}`);
     return res.data.data;
   } catch (err) {
@@ -24,7 +17,7 @@ const getAnimeFromId = async (anime_id) => {
 
 const getAnimesFromSearch = async (searchStr) => {
   try {
-    const config = { headers: headers, params: {...params, q: searchStr}}
+    const config = { params: {q: searchStr} }
     const res = await axios.get(BASE_URL + `/anime`, config);
     return res.data;
   } catch (err) {
@@ -34,8 +27,8 @@ const getAnimesFromSearch = async (searchStr) => {
 
 const getTopAnime = async () => {
   try {
-    const config = { headers: headers, params: {...params, ranking_type: "all"}}
-    const res = await axios.get(BASE_URL + '/anime/ranking', config);
+    const config = { params: { filter: "airing"}}
+    const res = await axios.get(BASE_URL + '/top/anime', config);
     return res.data;
   } catch (err) {
     return err.message;
@@ -44,20 +37,53 @@ const getTopAnime = async () => {
 
 const getSeasonalAnime = async () => {
   try {
-    const config = { headers: headers, params: params}
-    const season = getSeason();
-    const res = await axios.get(BASE_URL + `/anime/season/${season.year}/${season.season}`, config);
+    const res = await axios.get(BASE_URL + `/seasons/now`);
     return res.data;
   } catch (err) {
     return err.message;
   }
 }
 
+const getEpisodes = async (anime_id) => {
+  try {
+    const res = await axios.get(BASE_URL + `/anime/${anime_id}/episodes`);
+    return res.data;
+  } catch (err) {
+    return err.message;
+  }
+}
+
+// sample response:
+// {
+//   "data": {
+//       "mal_id": 2,
+//       "url": "https://myanimelist.net/anime/20/Naruto/episode/2",
+//       "title": "My Name is Konohamaru!",
+//       "title_japanese": "木ノ葉丸だ コレ!",
+//       "title_romanji": "Konohamaru da Kore!",
+//       "duration": 1380,
+//       "aired": "2002-10-10T00:00:00+09:00",
+//       "filler": false,
+//       "recap": false,
+//       "synopsis": "Naruto finally graduates from the Ninja Academy and claims to know it all. (Source: Crunchyroll)"
+//   }
+// }
+const getEpisode = async (anime_id, episode_id) => {
+  try {
+    const res = await axios.get(BASE_URL + `/anime/${anime_id}/episodes/${episode_id}`);
+    return res.data;
+  } catch (err) {
+    console.log("Error in getting episode");
+    return err.message;
+  }
+}
+
 module.exports = {
     BASE_URL,
-    // TOKEN,
     getAnimeFromId,
     getAnimesFromSearch,
     getTopAnime,
-    getSeasonalAnime
+    getSeasonalAnime,
+    getEpisode,
+    getEpisodes
 }

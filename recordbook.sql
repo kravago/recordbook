@@ -2,7 +2,7 @@
 -- NOTE! If you have used non-SQL datatypes in your design, you will have to change these here.
 
 \echo 'Delete and recreate recordbook db?'
-\prompt 'Return for yes or control-C to cancel > '
+\prompt 'Return for yes or control-C to cancel > ' foo
 
 DROP DATABASE recordbook;
 CREATE DATABASE recordbook;
@@ -38,17 +38,32 @@ CREATE TABLE "anime" (
     "image" text   NOT NULL,
     "start_date" date   NOT NULL,
     "end_date" date   NOT NULL,
-    "rating" float   NOT NULL,
+    "rating" text   NOT NULL,
     "status" text   NOT NULL,
     CONSTRAINT "pk_anime" PRIMARY KEY (
         "anime_id"
      )
 );
 
+CREATE TABLE "episode" (
+    "anime_id" int   NOT NULL,
+    "episode_id" int   NOT NULL,
+    "episode_title" text NOT NULL,
+    "aired" date NOT NULL,
+    "recap" boolean NOT NULL,
+    "filler" boolean NOT NULL,
+    "synopsis" text NOT NULL,
+    CONSTRAINT "pk_episode" PRIMARY KEY (
+        "anime_id"
+     )
+);
 ALTER TABLE "records" ADD CONSTRAINT "fk_records_uid" FOREIGN KEY("uid")
 REFERENCES "users" ("uid");
 
 ALTER TABLE "records" ADD CONSTRAINT "fk_records_anime_id" FOREIGN KEY("anime_id")
+REFERENCES "anime" ("anime_id");
+
+ALTER TABLE "episode" ADD CONSTRAINT "fk_anime_uid" FOREIGN KEY("anime_id")
 REFERENCES "anime" ("anime_id");
 
 -- seed some values
@@ -77,12 +92,79 @@ VALUES (
     'finished_airing'
     );
 
-INSERT INTO users ( 
-    first_name,
-    last_name,
-    username,
-    email,
-    password
-) VALUES (
-    'test', 'user', 'testuser', 'testuser@gmail.com', 'password'
+-- INSERT INTO users ( 
+--     first_name,
+--     last_name,
+--     username,
+--     email,
+--     password
+-- ) VALUES (
+--     'test', 'user', 'testuser', 'testuser@gmail.com', 'password'
+-- );
+
+-- test db --
+
+\echo 'Delete and recreate recordbook db?'
+\prompt 'Return for yes or control-C to cancel > ' foo
+
+DROP DATABASE recordbook_test;
+CREATE DATABASE recordbook_test;
+\connect recordbook_test
+
+
+CREATE TABLE "users" (
+    "uid" SERIAL  NOT NULL,
+    "first_name" text   NOT NULL,
+    "last_name" text   NOT NULL,
+    "username" text   NOT NULL,
+    "email" text   NOT NULL,
+    "password" text   NOT NULL,
+    CONSTRAINT "pk_users_test" PRIMARY KEY (
+        "uid"
+     )
 );
+
+CREATE TABLE "records" (
+    "uid" int   NOT NULL,
+    "anime_id" int   NOT NULL,
+    "episodes_watched" int NOT NULL DEFAULT 0 CHECK ("episodes_watched" >= 0) ,
+    "score" float CHECK ("score" BETWEEN 0 AND 10),
+    CONSTRAINT "pk_records_test" PRIMARY KEY (
+        "uid","anime_id"
+     )
+);
+
+CREATE TABLE "anime" (
+    "anime_id" int   NOT NULL,
+    "anime_title" text   NOT NULL,
+    "synopsis" text NOT NULL,
+    "image" text   NOT NULL,
+    "start_date" date   NOT NULL,
+    "end_date" date   NOT NULL,
+    "rating" text   NOT NULL,
+    "status" text   NOT NULL,
+    CONSTRAINT "pk_anime_test" PRIMARY KEY (
+        "anime_id"
+     )
+);
+
+CREATE TABLE "episode" (
+    "anime_id" int   NOT NULL,
+    "episode_id" int   NOT NULL,
+    "episode_title" text NOT NULL,
+    "aired" date NOT NULL,
+    "recap" boolean NOT NULL,
+    "filler" boolean NOT NULL,
+    "synopsis" text NOT NULL,
+    CONSTRAINT "pk_episode_test" PRIMARY KEY (
+        "anime_id"
+     )
+);
+ALTER TABLE "records" ADD CONSTRAINT "fk_records_uid_test" FOREIGN KEY("uid")
+REFERENCES "users" ("uid");
+
+ALTER TABLE "records" ADD CONSTRAINT "fk_records_anime_id_test" FOREIGN KEY("anime_id")
+REFERENCES "anime" ("anime_id");
+
+ALTER TABLE "episode" ADD CONSTRAINT "fk_anime_uid_test" FOREIGN KEY("anime_id")
+REFERENCES "anime" ("anime_id");
